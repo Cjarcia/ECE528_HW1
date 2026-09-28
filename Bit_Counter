@@ -1,0 +1,62 @@
+// ECE 528/L - HW1
+// bit_counter.c
+// Cristian Garcia
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <ctype.h>
+#include <errno.h>
+
+int main(void)
+{
+    char buf[64];
+    char *end;
+    unsigned long long val;
+    uint32_t n;
+    int count = 0;
+    int i = 0;
+
+    printf("ECE 528/L - Cristian Garcia - HW1\n");
+    printf("Enter a non-negative integer: ");
+
+    if (fgets(buf, sizeof(buf), stdin) == NULL) {
+        printf("Invalid input. Please enter a non-negative integer.\n");
+        return 0;
+    }
+
+    // skip leading spaces, strtoull would happily accept "-1" so reject '-' here
+    while (isspace((unsigned char)buf[i])) {
+        i++;
+    }
+    if (buf[i] == '-' || buf[i] == '\0') {
+        printf("Invalid input. Please enter a non-negative integer.\n");
+        return 0;
+    }
+
+    errno = 0;
+    val = strtoull(&buf[i], &end, 10);
+
+    // make sure nothing but whitespace is left after the number
+    while (isspace((unsigned char)*end)) {
+        end++;
+    }
+
+    if (end == &buf[i] || *end != '\0' || errno == ERANGE || val > 0xFFFFFFFFULL) {
+        printf("Invalid input. Please enter a non-negative integer.\n");
+        return 0;
+    }
+
+    n = (uint32_t)val;
+
+    // each pass clears the lowest set bit
+    while (n != 0) {
+        n &= (n - 1);
+        count++;
+    }
+
+    printf("Number of bits set in %llu: %d\n", val, count);
+
+    return 0;
+}

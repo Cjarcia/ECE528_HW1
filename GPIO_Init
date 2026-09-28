@@ -1,0 +1,43 @@
+
+#include "msp.h"
+
+// Q12: select GPIO function for P1.0 and P1.7
+// P1->SEL0 &= ~0x81;
+// P1->SEL1 &= ~0x81;
+
+// Q13: P1.1 and P1.4 as inputs with pull-up resistors
+void P1_1_and_P1_4_Init(void)
+{
+    P1->SEL0 &= ~0x12;   // GPIO function
+    P1->SEL1 &= ~0x12;
+    P1->DIR  &= ~0x12;   // inputs
+    P1->REN  |=  0x12;   // enable resistors
+    P1->OUT  |=  0x12;   // OUT = 1 -> pull-up
+}
+
+// Q14: P3.1, P3.6, P5.0, P5.4 as inputs with pull-down resistors
+void Buttons_Init(void)
+{
+    // P3.1 = 0x02, P3.6 = 0x40
+    P3->SEL0 &= ~0x42;
+    P3->SEL1 &= ~0x42;
+    P3->DIR  &= ~0x42;
+    P3->REN  |=  0x42;
+    P3->OUT  &= ~0x42;   // OUT = 0 -> pull-down
+
+    // P5.0 = 0x01, P5.4 = 0x10
+    P5->SEL0 &= ~0x11;
+    P5->SEL1 &= ~0x11;
+    P5->DIR  &= ~0x11;
+    P5->REN  |=  0x11;
+    P5->OUT  &= ~0x11;
+}
+
+// Q15: P7.0 - P7.7 as outputs, start at 0
+void LEDs_Init(void)
+{
+    P7->SEL0 &= ~0xFF;
+    P7->SEL1 &= ~0xFF;
+    P7->DIR  |=  0xFF;   // outputs
+    P7->OUT  &= ~0xFF;   // all low
+}
